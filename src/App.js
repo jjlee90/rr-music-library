@@ -1,10 +1,12 @@
-import { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef } from "react"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Gallery from "./components/Gallery"
 import SearchBar from "./components/SearchBar"
-import "./App.css"
-// import data context
 import { DataContext } from "./context/DataContext"
 import SearchContext from "./context/SearchContext"
+import ArtistView from "./components/ArtistView"
+import AlbumView from "./components/AlbumView"
+import "./App.css"
 
 const App = () => {
   let [search, setSearch] = useState("")
@@ -31,17 +33,30 @@ const App = () => {
 
   return (
     <div>
-      <SearchContext.Provider
-        value={{ term: searchInput, handleSearch: handleSearch }}
-      >
-        <SearchBar />
-      </SearchContext.Provider>
-
       {message}
-      {/* wrap gallery with context  */}
-      <DataContext.Provider value={data}>
-        <Gallery />
-      </DataContext.Provider>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <React.Fragment>
+                <SearchContext.Provider
+                  value={{ term: searchInput, handleSearch: handleSearch }}
+                >
+                  <SearchBar />
+                </SearchContext.Provider>
+
+                <DataContext.Provider value={data}>
+                  <Gallery />
+                </DataContext.Provider>
+              </React.Fragment>
+            }
+          />
+
+          <Route path="/album/:id" element={<AlbumView />} />
+          <Route path="/artist/:id" element={<ArtistView />} />
+        </Routes>
+      </Router>
     </div>
   )
 }
